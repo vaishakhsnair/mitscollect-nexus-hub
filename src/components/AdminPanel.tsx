@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,8 +43,18 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
       const { data, error } = await supabase
         .from('submissions')
         .select(`
-          *,
-          profiles (
+          id,
+          title,
+          description,
+          contributor_name,
+          activity_date,
+          type,
+          department,
+          club,
+          section,
+          status,
+          created_at,
+          profiles:user_id (
             full_name,
             email
           )
@@ -67,7 +76,7 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
         section: item.section || '',
         status: item.status,
         created_at: item.created_at,
-        profiles: item.profiles
+        profiles: Array.isArray(item.profiles) ? item.profiles[0] || null : item.profiles
       }));
       
       setSubmissions(transformedData);
