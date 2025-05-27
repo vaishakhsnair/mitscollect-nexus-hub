@@ -26,7 +26,7 @@ interface Submission {
   profiles: {
     full_name: string;
     email: string;
-  };
+  } | null;
 }
 
 const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
@@ -53,7 +53,24 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSubmissions(data || []);
+      
+      // Transform the data to match our interface
+      const transformedData: Submission[] = (data || []).map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description || '',
+        contributor_name: item.contributor_name || '',
+        activity_date: item.activity_date || '',
+        type: item.type,
+        department: item.department || '',
+        club: item.club || '',
+        section: item.section || '',
+        status: item.status,
+        created_at: item.created_at,
+        profiles: item.profiles
+      }));
+      
+      setSubmissions(transformedData);
     } catch (error) {
       console.error('Error fetching submissions:', error);
       toast({
@@ -72,7 +89,7 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
         .from('submissions')
         .update({
           status,
-          reviewed_by: profile.id,
+          reviewed_by: profile?.id,
           reviewed_at: new Date().toISOString()
         })
         .eq('id', submissionId);
@@ -125,8 +142,8 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
               <tr key={submission.id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-3">
                   <div>
-                    <div className="font-medium">{submission.profiles?.full_name}</div>
-                    <div className="text-sm text-gray-500">{submission.profiles?.email}</div>
+                    <div className="font-medium">{submission.profiles?.full_name || 'Unknown User'}</div>
+                    <div className="text-sm text-gray-500">{submission.profiles?.email || 'No email'}</div>
                   </div>
                 </td>
                 <td className="px-4 py-3 capitalize">{submission.type}</td>
