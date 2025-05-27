@@ -1,13 +1,34 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { GraduationCap, Users, Image, Shield } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { GraduationCap, Users, Image, Shield, LogOut, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 interface DashboardProps {
   onNavigate: (page: string) => void;
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
+  const { user, profile, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const cards = [
     {
       id: 'departments',
@@ -26,17 +47,42 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       title: 'Gallery',
       icon: Image,
       description: 'View submitted images and content'
-    },
-    {
+    }
+  ];
+
+  // Only show admin panel for admin users
+  if (profile?.role === 'admin') {
+    cards.push({
       id: 'admin',
       title: 'Admin Panel',
       icon: Shield,
       description: 'Manage submissions and content'
-    }
-  ];
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-primary-600">COLLECT2MITS</h1>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center text-gray-600">
+              <User className="h-4 w-4 mr-2" />
+              <span>{profile?.full_name || user?.email}</span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="flex items-center"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Background Pattern */}
       <div className="absolute inset-0 dots-pattern opacity-30"></div>
       
@@ -47,9 +93,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
       <div className="relative z-10 container mx-auto px-4 py-16">
         <div className="text-center mb-16 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">
-            Welcome User
-          </h1>
+          <h2 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">
+            Welcome {profile?.full_name?.split(' ')[0] || 'User'}
+          </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Select an option below to start contributing to the MITS newsletter
           </p>

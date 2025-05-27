@@ -11,12 +11,21 @@ interface ClubDirectoryProps {
 
 const ClubDirectory = ({ onNavigate }: ClubDirectoryProps) => {
   const clubs = [
-    { id: 'ieee', name: 'IEEE Student Branch MITS', code: 'IEEE' },
-    { id: 'foss', name: 'FOSS MITS', code: 'FOSS' },
-    { id: 'robotics', name: 'Robotics Club', code: 'ROBO' },
-    { id: 'cultural', name: 'Cultural Committee', code: 'CULT' },
-    { id: 'sports', name: 'Sports Committee', code: 'SPRT' },
-    { id: 'nss', name: 'National Service Scheme', code: 'NSS' }
+    { id: 'IEEE SB MITS', name: 'IEEE SB MITS', code: 'IEEE' },
+    { id: 'NSS MITS', name: 'NSS MITS', code: 'NSS' },
+    { id: 'IEDC MITS', name: 'IEDC MITS', code: 'IEDC' },
+    { id: 'ETERNIA', name: 'ETERNIA', code: 'ETR' },
+    { id: 'μLearn MITS', name: 'μLearn MITS', code: 'μL' },
+    { id: 'Tinkerhub MITS', name: 'Tinkerhub MITS', code: 'TH' },
+    { id: 'YI YUVA MITS', name: 'YI YUVA MITS', code: 'YI' },
+    { id: 'FOSS', name: 'FOSS', code: 'FOSS' },
+    { id: 'Polaris Game Labs', name: 'Polaris Game Labs', code: 'PGL' },
+    { id: 'LINC', name: 'LINC', code: 'LINC' },
+    { id: 'ICI', name: 'ICI', code: 'ICI' },
+    { id: 'Math Club', name: 'Math Club', code: 'MATH' },
+    { id: 'Quiz Club', name: 'Quiz Club', code: 'QUIZ' },
+    { id: 'ASCE', name: 'ASCE', code: 'ASCE' },
+    { id: 'Rotract MITS', name: 'Rotract MITS', code: 'ROT' }
   ];
 
   return (

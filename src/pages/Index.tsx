@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import LoginPage from '@/components/LoginPage';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthPage from '@/components/AuthPage';
 import Dashboard from '@/components/Dashboard';
 import DepartmentDirectory from '@/components/DepartmentDirectory';
 import ClubDirectory from '@/components/ClubDirectory';
@@ -10,13 +11,10 @@ import AdminPanel from '@/components/AdminPanel';
 import Gallery from '@/components/Gallery';
 
 const Index = () => {
-  const [currentPage, setCurrentPage] = useState('login');
+  const { user, loading } = useAuth();
+  const [currentPage, setCurrentPage] = useState('dashboard');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('');
   const [selectedClub, setSelectedClub] = useState<string>('');
-
-  const handleLogin = () => {
-    setCurrentPage('dashboard');
-  };
 
   const handleNavigation = (page: string, param?: string) => {
     setCurrentPage(page);
@@ -29,10 +27,23 @@ const Index = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
   const renderCurrentPage = () => {
     switch (currentPage) {
-      case 'login':
-        return <LoginPage onLogin={handleLogin} />;
       case 'dashboard':
         return <Dashboard onNavigate={handleNavigation} />;
       case 'departments':
@@ -48,7 +59,7 @@ const Index = () => {
       case 'gallery':
         return <Gallery onNavigate={handleNavigation} />;
       default:
-        return <LoginPage onLogin={handleLogin} />;
+        return <Dashboard onNavigate={handleNavigation} />;
     }
   };
 

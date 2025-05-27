@@ -11,12 +11,14 @@ interface DepartmentDirectoryProps {
 
 const DepartmentDirectory = ({ onNavigate }: DepartmentDirectoryProps) => {
   const departments = [
-    { id: 'cse', name: 'Computer Science & Engineering', code: 'CSE' },
-    { id: 'ece', name: 'Electronics & Communication Engineering', code: 'ECE' },
-    { id: 'me', name: 'Mechanical Engineering', code: 'ME' },
-    { id: 'ce', name: 'Civil Engineering', code: 'CE' },
-    { id: 'eee', name: 'Electrical & Electronics Engineering', code: 'EEE' },
-    { id: 'it', name: 'Information Technology', code: 'IT' }
+    { id: 'Artificial Intelligence and Data Science', name: 'Artificial Intelligence and Data Science', code: 'AIDS' },
+    { id: 'Basic Science and Humanities', name: 'Basic Science and Humanities', code: 'BSH' },
+    { id: 'Civil Engineering', name: 'Civil Engineering', code: 'CE' },
+    { id: 'Computer Science and Engineering', name: 'Computer Science and Engineering', code: 'CSE' },
+    { id: 'Electrical and Communications Engineering', name: 'Electrical and Communications Engineering', code: 'ECE' },
+    { id: 'Electrical and Electronics Engineering', name: 'Electrical and Electronics Engineering', code: 'EEE' },
+    { id: 'Mechanical Engineering', name: 'Mechanical Engineering', code: 'ME' },
+    { id: 'MCA', name: 'MCA', code: 'MCA' }
   ];
 
   return (

@@ -9,7 +9,134 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      submission_images: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_name: string | null
+          image_url: string
+          submission_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_name?: string | null
+          image_url: string
+          submission_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_name?: string | null
+          image_url?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_images_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          activity_date: string | null
+          club: Database["public"]["Enums"]["club_type"] | null
+          contributor_name: string | null
+          created_at: string | null
+          department: Database["public"]["Enums"]["department_type"] | null
+          description: string | null
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          section: Database["public"]["Enums"]["department_section"] | null
+          status: Database["public"]["Enums"]["submission_status"] | null
+          title: string
+          type: Database["public"]["Enums"]["submission_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_date?: string | null
+          club?: Database["public"]["Enums"]["club_type"] | null
+          contributor_name?: string | null
+          created_at?: string | null
+          department?: Database["public"]["Enums"]["department_type"] | null
+          description?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          section?: Database["public"]["Enums"]["department_section"] | null
+          status?: Database["public"]["Enums"]["submission_status"] | null
+          title: string
+          type: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_date?: string | null
+          club?: Database["public"]["Enums"]["club_type"] | null
+          contributor_name?: string | null
+          created_at?: string | null
+          department?: Database["public"]["Enums"]["department_type"] | null
+          description?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          section?: Database["public"]["Enums"]["department_section"] | null
+          status?: Database["public"]["Enums"]["submission_status"] | null
+          title?: string
+          type?: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +145,38 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      club_type:
+        | "IEEE SB MITS"
+        | "NSS MITS"
+        | "IEDC MITS"
+        | "ETERNIA"
+        | "μLearn MITS"
+        | "Tinkerhub MITS"
+        | "YI YUVA MITS"
+        | "FOSS"
+        | "Polaris Game Labs"
+        | "LINC"
+        | "ICI"
+        | "Math Club"
+        | "Quiz Club"
+        | "ASCE"
+        | "Rotract MITS"
+      department_section:
+        | "Department Activities"
+        | "Faculty Achievements"
+        | "Student Achievements"
+        | "NPTEL Certifications"
+      department_type:
+        | "Artificial Intelligence and Data Science"
+        | "Basic Science and Humanities"
+        | "Civil Engineering"
+        | "Computer Science and Engineering"
+        | "Electrical and Communications Engineering"
+        | "Electrical and Electronics Engineering"
+        | "Mechanical Engineering"
+        | "MCA"
+      submission_status: "pending" | "approved" | "rejected"
+      submission_type: "department" | "club"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +291,42 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      club_type: [
+        "IEEE SB MITS",
+        "NSS MITS",
+        "IEDC MITS",
+        "ETERNIA",
+        "μLearn MITS",
+        "Tinkerhub MITS",
+        "YI YUVA MITS",
+        "FOSS",
+        "Polaris Game Labs",
+        "LINC",
+        "ICI",
+        "Math Club",
+        "Quiz Club",
+        "ASCE",
+        "Rotract MITS",
+      ],
+      department_section: [
+        "Department Activities",
+        "Faculty Achievements",
+        "Student Achievements",
+        "NPTEL Certifications",
+      ],
+      department_type: [
+        "Artificial Intelligence and Data Science",
+        "Basic Science and Humanities",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Electrical and Communications Engineering",
+        "Electrical and Electronics Engineering",
+        "Mechanical Engineering",
+        "MCA",
+      ],
+      submission_status: ["pending", "approved", "rejected"],
+      submission_type: ["department", "club"],
+    },
   },
 } as const
