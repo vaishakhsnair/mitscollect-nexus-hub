@@ -68,142 +68,147 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
-        {/* Left side - Branding */}
-        <div className="space-y-8 text-center lg:text-left">
-          <div className="space-y-4">
-            <div className="inline-flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center">
+      <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
+        {/* Left side - Login Form */}
+        <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+          <div className="w-full max-w-md space-y-8">
+            {/* Logo */}
+            <div className="flex items-center space-x-3 mb-12">
+              <div className="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">connect</span>
               </div>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black text-gray-900 tracking-tight">
-              COLLECT2MITS
-            </h1>
-            <div className="text-2xl lg:text-4xl font-bold text-primary-600 mt-8">
+
+            {/* Main Title */}
+            <div className="mb-16">
+              <h1 className="text-6xl lg:text-7xl font-black text-black tracking-tight mb-4">
+                COLLECT2MITS
+              </h1>
+            </div>
+
+            {/* Auth Form */}
+            <Card className="w-full shadow-none border-0 bg-transparent p-0">
+              <CardContent className="p-0 space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-4">
+                    {!isLogin && !isForgotPassword && (
+                      <Input
+                        type="text"
+                        placeholder="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="h-14 text-lg border-2 border-gray-300 rounded-lg px-4"
+                        required={!isLogin && !isForgotPassword}
+                      />
+                    )}
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-14 text-lg border-2 border-gray-300 rounded-lg px-4"
+                      required
+                    />
+                    {!isForgotPassword && (
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="h-14 text-lg border-2 border-gray-300 rounded-lg px-4 pr-12"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-14 px-4 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5 text-gray-400" />
+                          ) : (
+                            <Eye className="h-5 w-5 text-gray-400" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {isLogin && !isForgotPassword && (
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsForgotPassword(true);
+                          resetForm();
+                        }}
+                        className="text-sm text-gray-600 hover:text-red-600 transition-colors"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-14 text-lg font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                  >
+                    {loading ? 'Loading...' : (
+                      isForgotPassword ? 'Send Reset Email' : (isLogin ? 'LOGIN' : 'SIGN UP')
+                    )}
+                  </Button>
+
+                  {!isForgotPassword && (
+                    <div className="text-center">
+                      <span className="text-sm text-gray-600">
+                        {isLogin ? "Don't have an account? " : "Already have an account? "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsLogin(!isLogin);
+                            resetForm();
+                          }}
+                          className="text-gray-800 hover:text-red-600 font-medium"
+                        >
+                          {isLogin ? 'Sign in now' : 'Login here'}
+                        </button>
+                      </span>
+                    </div>
+                  )}
+
+                  {isForgotPassword && (
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsForgotPassword(false);
+                          resetForm();
+                        }}
+                        className="text-sm text-gray-600 hover:text-red-600 transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Back to login</span>
+                      </button>
+                    </div>
+                  )}
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Right side - Branding */}
+        <div className="space-y-8 text-center lg:text-left order-1 lg:order-2">
+          <div className="space-y-8">
+            <div className="text-6xl lg:text-8xl font-black text-red-600 leading-tight">
               Data Collection<br />
               made easier<br />
               than ever
             </div>
           </div>
-        </div>
-
-        {/* Right side - Auth Form */}
-        <div className="flex justify-center">
-          <Card className="w-full max-w-md shadow-xl border-0">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                {isForgotPassword && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setIsForgotPassword(false);
-                      resetForm();
-                    }}
-                    className="p-1"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                )}
-                <CardTitle className="text-2xl">
-                  {isForgotPassword ? 'Reset Password' : (isLogin ? 'Welcome Back' : 'Create Account')}
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="p-8 space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
-                  {!isLogin && !isForgotPassword && (
-                    <Input
-                      type="text"
-                      placeholder="Full Name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="h-12 text-base"
-                      required={!isLogin && !isForgotPassword}
-                    />
-                  )}
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 text-base"
-                    required
-                  />
-                  {!isForgotPassword && (
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 text-base pr-10"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-400" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-400" />
-                        )}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {isLogin && !isForgotPassword && (
-                  <div className="text-right">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsForgotPassword(true);
-                        resetForm();
-                      }}
-                      className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-12 text-base font-semibold bg-primary-600 hover:bg-primary-700"
-                >
-                  {loading ? 'Loading...' : (
-                    isForgotPassword ? 'Send Reset Email' : (isLogin ? 'LOGIN' : 'SIGN UP')
-                  )}
-                </Button>
-
-                {!isForgotPassword && (
-                  <div className="text-center">
-                    <span className="text-sm text-gray-600">
-                      {isLogin ? "Don't have an account? " : "Already have an account? "}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsLogin(!isLogin);
-                          resetForm();
-                        }}
-                        className="text-primary-600 hover:text-primary-700 font-medium"
-                      >
-                        {isLogin ? 'Sign up now' : 'Login here'}
-                      </button>
-                    </span>
-                  </div>
-                )}
-              </form>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
