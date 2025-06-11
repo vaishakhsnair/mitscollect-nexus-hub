@@ -1,73 +1,136 @@
-# Welcome to your Lovable project
+# COLLECT2MITS
 
-## Project info
+**COLLECT2MITS** is an internal web platform designed to collect, organize, and manage information for the official college newsletter at MITS. The platform allows departments and clubs to submit their activities, achievements, and event details along with associated images. An admin dashboard enables easy review, approval, and management of submissions.
 
-**URL**: https://lovable.dev/projects/424678da-d36a-47d6-879d-7aa60ee18aec
+---
 
-## How can I edit this code?
+## 🌐 Project Overview
 
-There are several ways of editing your application.
+COLLECT2MITS simplifies content collection for the newsletter by providing:
 
-**Use Lovable**
+- Department-wise and club-wise submission portals.
+- Rich text descriptions and media uploads.
+- A centralized admin dashboard for managing submissions.
+- Organized gallery view of approved submissions.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/424678da-d36a-47d6-879d-7aa60ee18aec) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🔖 Information Architecture
 
-**Use your preferred IDE**
+### Total Pages
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Home / Dashboard
+2. Department Directory Page
+3. Individual Department Submission Page
+4. Club Directory Page
+5. Individual Club Submission Page
+6. Gallery Page
+7. Admin Login Page
+8. Admin Dashboard
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 📄 Page Details
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 1️⃣ Home / Dashboard
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Website Title: `COLLECT2MITS`
+- Description: _"A platform for collecting achievements and activities at MITS."_
+- Quick links to:
+  - Department Submissions
+  - Club Submissions
+  - Gallery
+  - Admin Login
+- Collapsible user guide / FAQ
+- Fully responsive design
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 2️⃣ Department Directory Page
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- Displays all college departments
+- Each department links to its submission form
+- Includes search and filtering capabilities
 
-**Edit a file directly in GitHub**
+### 3️⃣ Department Submission Page
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Form fields:
+- Section (Department Activities, Faculty Achievements, Student Achievements, NPTEL Certifications)
+- Title
+- Description (Rich Text)
+- Name of Contributor 
+- Date of Activity
+- Image Upload (Multiple images, size-limited)
+- Submit Button
+- Preview & Save Draft
 
-**Use GitHub Codespaces**
+### 4️⃣ Club Directory Page
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Displays all college clubs with optional logos and descriptions
+- Each club links to its submission form
+- Includes search and filtering capabilities
 
-## What technologies are used for this project?
+### 5️⃣ Club Submission Page
 
-This project is built with:
+Form fields:
+- Event Title
+- Description (Rich Text)
+- Date of Event
+- Image Upload (Multiple images)
+- Club Contact Person / Submitter Name
+- Tags (Workshop, Seminar, Cultural, etc.)
+- Submit Button
+- (Optional) Preview & Save Draft
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 6️⃣ Gallery Page
 
-## How can I deploy this project?
+- Publicly showcases approved images
+- Filters:
+  - Department
+  - Club
+  - Event Type
+  - Date
+- Lightbox image viewer
+- Pagination / lazy loading
 
-Simply open [Lovable](https://lovable.dev/projects/424678da-d36a-47d6-879d-7aa60ee18aec) and click on Share -> Publish.
+### 7️⃣ Admin Login Page
 
-## Can I connect a custom domain to my Lovable project?
+- Secure authentication for admin team
+- Username & Password fields
+- Forgot password link (optional)
 
-Yes, you can!
+### 8️⃣ Admin Dashboard
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- View and manage all submissions
+- Filters: Department, Club, Submission Type, Date
+- Approve, Edit, or Reject submissions
+- Export data (CSV, PDF)
+- Image management
+- Notification center for new submissions
+- Optional email notifications for submitters
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## ⚙️ Global Features
+
+- Fully responsive (mobile + desktop)
+- Image compression & upload limits
+- Form validation and error handling
+- Submission confirmation & optional email notifications
+- Accessibility (ARIA labels, alt text for images)
+- (Optional) Dark Mode
+- (Optional) Multi-language support
+
+---
+
+## 🧑‍💻 User Roles
+
+- **Contributors (students/faculty):**
+  - Submit content and images
+  - Preview and save drafts
+
+- **Admins:**
+  - Review, edit, approve, and reject submissions
+  - Manage and export data
+  - Oversee the entire content pipeline
+
+---
+
