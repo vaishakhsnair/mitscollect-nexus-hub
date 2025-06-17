@@ -1,10 +1,15 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { ArrowLeft, Upload, Calendar, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +18,12 @@ import { supabase } from '@/integrations/supabase/client';
 interface DepartmentFormProps {
   onNavigate: (page: string) => void;
   department?: string;
+}
+
+interface UploadedImage {
+  path: string;
+  publicUrl: string;
+  fileName: string;
 }
 
 const DepartmentForm = ({ onNavigate, department }: DepartmentFormProps) => {
@@ -24,15 +35,8 @@ const DepartmentForm = ({ onNavigate, department }: DepartmentFormProps) => {
     date: ''
   });
 
-  interface UploadedImage {
-    path: string;
-    publicUrl: string;
-    fileName: string;
-  }
-
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [uploading, setUploading] = useState(false);
-
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
@@ -153,6 +157,7 @@ const DepartmentForm = ({ onNavigate, department }: DepartmentFormProps) => {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">

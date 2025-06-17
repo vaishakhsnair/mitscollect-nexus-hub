@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +13,12 @@ interface ClubFormProps {
   club?: string;
 }
 
+interface UploadedImage {
+  path: string;
+  publicUrl: string;
+  fileName: string;
+}
+
 const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -22,15 +27,8 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
     contact: ''
   });
 
-  interface UploadedImage {
-    path: string;
-    publicUrl: string;
-    fileName: string;
-  }
-
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [uploading, setUploading] = useState(false);
-
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
@@ -143,6 +141,7 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
