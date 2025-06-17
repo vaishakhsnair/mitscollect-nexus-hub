@@ -2,23 +2,55 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 interface LoginPageProps {
   onLogin: () => void;
 }
 
 const LoginPage = ({ onLogin }: LoginPageProps) => {
+  const { signIn, signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple validation for demo
-    if (email && password) {
-      onLogin();
+    setLoading(true);
+
+    try {
+      if (isSignUp) {
+        await signUp(email, password, fullName);
+        toast({
+          title: 'Account created!',
+          description: 'Check your email to verify your account.'
+        });
+        setIsSignUp(false);
+        setEmail('');
+        setPassword('');
+        setFullName('');
+      } else {
+        await signIn(email, password);
+        toast({
+          title: 'Welcome back!',
+          description: 'You have successfully logged in.'
+        });
+        onLogin();
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Authentication failed.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,9 +79,24 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         {/* Right side - Login Form */}
         <div className="flex justify-center">
           <Card className="w-full max-w-md shadow-xl border-0">
+            <CardHeader>
+              <CardTitle className="text-2xl text-center">
+                {isSignUp ? 'Create Account' : 'Login'}
+              </CardTitle>
+            </CardHeader>
             <CardContent className="p-8 space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
+                  {isSignUp && (
+                    <Input
+                      type="text"
+                      placeholder="Full Name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="h-12 text-base"
+                      required
+                    />
+                  )}
                   <Input
                     type="email"
                     placeholder="Email"
@@ -83,27 +130,38 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <button
-                    type="button"
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                {!isSignUp && (
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                      onClick={() => toast({
+                        title: 'Password reset',
+                        description: 'Use the main login page to reset your password.'
+                      })}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
 
                 <Button
                   type="submit"
+                  disabled={loading}
                   className="w-full h-12 text-base font-semibold bg-primary-600 hover:bg-primary-700"
                 >
-                  LOGIN
+                  {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Login'}
                 </Button>
 
                 <div className="text-center">
                   <span className="text-sm text-gray-600">
-                    Don't have an account?{' '}
-                    <button className="text-primary-600 hover:text-primary-700 font-medium">
-                      Sign in now
+                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                    <button
+                      type="button"
+                      onClick={() => setIsSignUp(!isSignUp)}
+                      className="text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      {isSignUp ? 'Login here' : 'Sign up now'}
                     </button>
                   </span>
                 </div>
