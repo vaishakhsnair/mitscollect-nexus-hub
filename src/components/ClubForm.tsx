@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Upload, Calendar } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ClubFormProps {
   onNavigate: (page: string) => void;
@@ -21,6 +23,9 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
     images: [] as File[]
   });
 
+  const { user } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
@@ -31,13 +36,73 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Submission Successful",
-      description: "Your club submission has been received for review.",
-    });
-    onNavigate('dashboard');
+
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'You must be logged in to submit.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('submissions')
+        .insert({
+          title: formData.title,
+          description: formData.description,
+          activity_date: formData.date,
+          contributor_name: formData.contact,
+          club: club,
+          type: 'club',
+          status: 'pending',
+          user_id: user.id
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+
+      const submissionId = data.id;
+
+      for (const file of formData.images) {
+        const filePath = `${submissionId}/${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('submission-images')
+          .upload(filePath, file);
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('submission-images')
+            .getPublicUrl(filePath);
+
+          await supabase.from('submission_images').insert({
+            submission_id: submissionId,
+            image_url: urlData.publicUrl,
+            image_name: file.name
+          });
+        }
+      }
+
+      toast({
+        title: 'Submission Successful',
+        description: 'Your club submission has been received for review.'
+      });
+      onNavigate('dashboard');
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to submit. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -155,9 +220,10 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
 
                 <Button
                   type="submit"
+                  disabled={submitting}
                   className="w-full h-12 text-base font-semibold bg-black hover:bg-gray-800 text-white"
                 >
-                  Submit
+                  {submitting ? 'Submitting...' : 'Submit'}
                 </Button>
               </form>
             </CardContent>
