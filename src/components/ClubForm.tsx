@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Upload, Calendar } from 'lucide-react';
+import { ArrowLeft, Upload, Calendar, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,26 +13,67 @@ interface ClubFormProps {
   club?: string;
 }
 
+interface UploadedImage {
+  path: string;
+  publicUrl: string;
+  fileName: string;
+}
+
 const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     date: '',
-    contact: '',
-    images: [] as File[]
+    contact: ''
   });
 
+  const [images, setImages] = useState<UploadedImage[]>([]);
+  const [uploading, setUploading] = useState(false);
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newImages = Array.from(e.target.files);
-      setFormData(prev => ({
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    setUploading(true);
+    for (const file of Array.from(e.target.files)) {
+      const filePath = `${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage
+        .from('submission-images')
+        .upload(filePath, file);
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to upload image.',
+          variant: 'destructive'
+        });
+        continue;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('submission-images')
+        .getPublicUrl(filePath);
+
+      if (!urlData?.publicUrl) {
+        toast({
+          title: 'Error',
+          description: 'Invalid image URL returned.',
+          variant: 'destructive'
+        });
+        continue;
+      }
+
+      setImages(prev => [
         ...prev,
-        images: [...prev.images, ...newImages]
-      }));
+        {
+          path: filePath,
+          publicUrl: urlData.publicUrl,
+          fileName: file.name
+        }
+      ]);
     }
+    setUploading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,6 +84,14 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
         title: 'Error',
         description: 'You must be logged in to submit.',
         variant: 'destructive'
+      });
+      return;
+    }
+
+    if (uploading) {
+      toast({
+        title: 'Please wait',
+        description: 'Images are still uploading.',
       });
       return;
     }
@@ -70,23 +118,12 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
 
       const submissionId = data.id;
 
-      for (const file of formData.images) {
-        const filePath = `${submissionId}/${Date.now()}-${file.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from('submission-images')
-          .upload(filePath, file);
-
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from('submission-images')
-            .getPublicUrl(filePath);
-
-          await supabase.from('submission_images').insert({
-            submission_id: submissionId,
-            image_url: urlData.publicUrl,
-            image_name: file.name
-          });
-        }
+      for (const img of images) {
+        await supabase.from('submission_images').insert({
+          submission_id: submissionId,
+          image_url: img.publicUrl,
+          image_name: img.fileName
+        });
       }
 
       toast({
@@ -104,6 +141,7 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -180,11 +218,35 @@ const ClubForm = ({ onNavigate, club }: ClubFormProps) => {
                       Choose Files
                     </Button>
                   </div>
-                  {formData.images.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-600">
-                        {formData.images.length} file(s) selected
-                      </p>
+                  {uploading && (
+                    <p className="text-sm text-gray-600 mt-2">Uploading images...</p>
+                  )}
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                      {images.map((img, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={img.publicUrl}
+                            alt={img.fileName}
+                            className="h-24 w-full object-cover rounded-md"
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute top-1 right-1 h-5 w-5"
+                            onClick={async () => {
+                              await supabase.storage
+                                .from('submission-images')
+                                .remove([img.path]);
+                              setImages(prev => prev.filter((_, i) => i !== index));
+                            }}
+                          >
+                            <span className="sr-only">Remove</span>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

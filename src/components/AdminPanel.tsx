@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Download, User, Check, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -33,6 +34,10 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState('pending');
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [detailImages, setDetailImages] = useState<{ image_url: string; image_name: string }[]>([]);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     fetchSubmissions();
@@ -122,6 +127,27 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
     }
   };
 
+  const openDetails = async (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setDetailOpen(true);
+    setDetailLoading(true);
+    const { data, error } = await supabase
+      .from('submission_images')
+      .select('image_url, image_name')
+      .eq('submission_id', submission.id);
+    if (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch images.',
+        variant: 'destructive'
+      });
+      setDetailImages([]);
+    } else {
+      setDetailImages(data || []);
+    }
+    setDetailLoading(false);
+  };
+
   const filteredSubmissions = submissions.filter(s => 
     activeTab === 'pending' ? s.status === 'pending' : s.status === 'approved'
   );
@@ -136,6 +162,7 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
             <th className="px-4 py-3 text-left">Title</th>
             <th className="px-4 py-3 text-left">Department/Club</th>
             <th className="px-4 py-3 text-left">Date</th>
+            <th className="px-4 py-3 text-left">Details</th>
             {activeTab === 'pending' && <th className="px-4 py-3 text-left">Actions</th>}
           </tr>
         </thead>
@@ -162,6 +189,15 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
                 </td>
                 <td className="px-4 py-3">
                   {new Date(submission.created_at).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openDetails(submission)}
+                  >
+                    View
+                  </Button>
                 </td>
                 {activeTab === 'pending' && (
                   <td className="px-4 py-3">
@@ -268,6 +304,39 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
               Download as CSV
             </Button>
           </div>
+
+          <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+            <DialogContent className="max-w-2xl">
+              {selectedSubmission && (
+                <>
+                  <DialogHeader>
+                    <DialogTitle>{selectedSubmission.title}</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    <p><strong>Description:</strong> {selectedSubmission.description}</p>
+                    {selectedSubmission.contributor_name && (
+                      <p><strong>Contributor:</strong> {selectedSubmission.contributor_name}</p>
+                    )}
+                    {selectedSubmission.activity_date && (
+                      <p><strong>Date:</strong> {new Date(selectedSubmission.activity_date).toLocaleDateString()}</p>
+                    )}
+                    {detailLoading ? (
+                      <p>Loading images...</p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {detailImages.map(img => (
+                          <img key={img.image_url} src={img.image_url} alt={img.image_name} className="h-32 w-full object-cover rounded" />
+                        ))}
+                        {detailImages.length === 0 && (
+                          <p className="text-sm text-gray-500">No images</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
